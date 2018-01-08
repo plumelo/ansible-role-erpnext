@@ -1,0 +1,9 @@
+---
+- name: restart mysql
+  service: name=mysql state=restarted
+
+- name: reload mysql
+  service: name=mysql state=reloaded
+
+- name: restart percona
+  service: name=mysql state=restarted

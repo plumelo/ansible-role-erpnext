@@ -1,0 +1,28 @@
+---
+
+# MySQL generated root password
+mysql_root_pass: "{{ lookup('password', 'credentials/mysql/root length=15') }}"
+
+# Installation type
+mysql_installation_type: ""
+
+# MySQL package: mariadb or mysql or percona
+mysql_package: mysql
+
+# If percona
+percona_version: '5.7'
+
+# MySQL hosts used for creating users
+mysql_hosts:
+  - "{{ ansible_hostname }}"
+  - 127.0.0.1
+  - ::1
+  - localhost
+
+# MySQL Databases
+mysql_databases: []
+
+# MySQL Users
+mysql_users: []
+
+mysql_config:
