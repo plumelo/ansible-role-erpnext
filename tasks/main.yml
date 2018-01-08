@@ -1,0 +1,13 @@
+---
+
+- include: dependencies.yml
+
+- include: wkhtmltopdf.yml
+
+- include: redis.yml
+
+- include: mysql.yml
+
+- include: nginx.yml
+
+- include: bench.yml
