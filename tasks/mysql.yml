@@ -1,0 +1,5 @@
+---
+
+- include_role: name=plumelo.mysql private=true
+  vars:
+    mysql_package: mariadb
