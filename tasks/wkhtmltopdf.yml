@@ -1,0 +1,22 @@
+---
+
+- name: Ensure wkhtmltox directory exists
+  file: path='/opt/wkhtmltox' state=directory owner=root group=root
+
+- name: Download wkhtmltopdf
+  unarchive:
+    src: https://github.com/wkhtmltopdf/wkhtmltopdf/releases/download/0.12.4/wkhtmltox-0.12.4_linux-generic-amd64.tar.xz
+    dest: /opt/wkhtmltox
+    remote_src: yes
+    extra_opts: '--strip-components=1'
+    list_files: yes
+
+- name: Symlink wkhtmltox executables
+  file:
+    src: /opt/wkhtmltox/bin/{{ item.src }}
+    dest: /usr/bin/{{ item.dest }}
+    state: link
+    force: True
+  with_items:
+    - { src: 'wkhtmltopdf', dest: 'wkhtmltopdf' }
+    - { src: 'wkhtmltoimage', dest: 'wkhtmltoimage' }
