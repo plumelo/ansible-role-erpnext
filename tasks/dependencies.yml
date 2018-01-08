@@ -1,0 +1,36 @@
+---
+
+- name: Create erpnext user
+  user:
+    name: '{{ erpnext_user }}'
+
+- name: Install system packages
+  apt:
+    pkg: '{{ item }}'
+    update_cache: yes
+  with_items:
+    - acl
+    - git
+    - python-dev
+    - python-pip
+    - virtualenv
+    - libpq-dev
+    - libsasl2-dev
+    - libldap2-dev
+    - libffi-dev
+    - libssl-dev
+    - openssl
+    - build-essential
+    - libxrender-dev
+    - libx11-dev
+    - libfontconfig1-dev
+    - libfreetype6-dev
+    - fontconfig
+
+- name: Install n
+  become: True
+  become_user: '{{ erpnext_user }}'
+  shell: curl -L https://git.io/n-install | bash -s -- -y 8.9.4
+  args:
+    creates: /home/{{ erpnext_user }}/n/bin/n
+    executable: /bin/bash
