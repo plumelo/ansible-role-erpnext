@@ -4,28 +4,22 @@
   git:
     accept_hostkey: yes
     repo: '{{ erpnext_repo }}'
-    dest: '{{ erpnext_path }}'
+    dest: '{{ erpnext_path }}/bench-repo'
   become: yes
   become_user: '{{ erpnext_user }}'
 
 - name: Pip install bench
   pip:
-    chdir: '{{ erpnext_config_path }}'
-    name: file://{{ erpnext_path }}
-    extra_args: --user
+    chdir: '{{ erpnext_path }}'
+    extra_args: --user -e
+    name: bench-repo
   become: yes
   become_user: '{{ erpnext_user }}'
 
 - name: Create a new bench
-  command: ./bench init frappe-bench
+  command: ~/.local/bin/bench init frappe-bench
   args:
-    chdir: '{{ erpnext_config_path }}/.local/bin/'
+    chdir: '{{ erpnext_path }}'
+    creates: '{{ erpnext_path }}/frappe-bench/package.json'
   become: yes
   become_user: '{{ erpnext_user }}'
-
-# - name: Add a site
-#   shell: bench new-site '{{ erpnext_new_site }}'
-
-# - name: Add apps
-#   shell: bench get-app '{{ item }}' https://github.com/frappe/{{ item }}
-#   with_items: '{{ erpnext_app }}'
