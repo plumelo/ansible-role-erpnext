@@ -1,11 +1,10 @@
 ---
 
-erpnext_user: erpnext
-erpnext_group: erpnext
+erpnext_user: frappe
 
 erpnext_repo: https://github.com/frappe/bench
-erpnext_path: /home/{{ erpnext_user }}/bench-repo
-erpnext_config_path: /home/{{ erpnext_user }}
-erpnext_new_site: test.local
+erpnext_path: /home/{{ erpnext_user }}
+erpnext_new_site: frappe
 erpnext_app:
   - erpnext
+erpnext_mysql_root_pass: "frappe"
