@@ -2,4 +2,3 @@
 
 - role: plumelo.mysql
 - role: jdauphant.nginx
-
