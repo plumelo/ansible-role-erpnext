@@ -1,0 +1,57 @@
+---
+
+- name: Clone the git repo for bench
+  git:
+    accept_hostkey: yes
+    repo: '{{ erpnext_repo }}'
+    dest: '{{ erpnext_path }}/bench-repo'
+  become: yes
+  become_user: '{{ erpnext_user }}'
+
+- name: Pip install bench
+  pip:
+    chdir: '{{ erpnext_path }}'
+    extra_args: --user -e
+    name: bench-repo
+  become: yes
+  become_user: '{{ erpnext_user }}'
+
+- name: Create a new bench
+  command: .local/bin/bench init frappe-bench
+  args:
+    chdir: '{{ erpnext_path }}'
+    creates: '{{ erpnext_path }}/frappe-bench/package.json'
+  become: yes
+  become_user: '{{ erpnext_user }}'
+
+- name: Add a site
+  command: ~/.local/bin/bench new-site --db-name {{ erpnext_user }}  --mariadb-root-password {{ erpnext_mysql_root_pass }} --admin-password {{ erpnext_user }} {{ erpnext_new_site }}
+  args:
+    chdir: '{{ erpnext_path }}/frappe-bench'
+  become: yes
+  become_user: '{{ erpnext_user }}'
+
+# - name: Add apps
+#   shell: .local/bin/bench get-app '{{ item }}' https://github.com/frappe/{{ item }}
+#   with_items: '{{ erpnext_app }}'
+#   args:
+#     chdir: '{{ erpnext_config_path }}'
+#     creates: '{{ erpnext_config_path }}/frappe-bench/package.json'
+#   become: yes
+#   become_user: '{{ erpnext_user }}'
+
+# - name: Install apps
+#   command: bench --site {{ erpnext_app }} install-app {{ erpnext_app }}
+#   args:
+#     chdir: '{{ erpnext_config_path }}'
+#     creates: '{{ erpnext_config_path }}/frappe-bench/package.json'
+#   become: yes
+#   become_user: '{{ erpnext_user }}'
+
+# - name: Start bench
+#   command: start bench
+#   args:
+#     chdir: '{{ erpnext_config_path }}'
+#     creates: '{{ erpnext_config_path }}/frappe-bench/package.json'
+#   become: yes
+#   become_user: '{{ erpnext_user }}'
