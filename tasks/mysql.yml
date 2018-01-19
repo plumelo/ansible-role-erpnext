@@ -2,4 +2,32 @@
 
 - include_role: name=plumelo.mysql private=true
   vars:
+    mysql_root_pass: '{{ erpnext_mysql_root_pass }}'
     mysql_package: mariadb
+    mysql_users:
+      - name: 'root'
+        append_privs: yes
+        state: present
+        pass: '{{ erpnext_mysql_root_pass }}'
+        privs:
+          - "*.*:ALL,GRANT"
+        hosts:
+          - localhost
+          - 127.0.0.1
+    mysql_config:
+      mysqld:
+        innodb-file-format: barracuda
+        innodb-file-per-table: 1
+        innodb-large-prefix: 1
+        character-set-client-handshake: FALSE
+        character-set-server: utf8mb4
+        collation-server: utf8mb4_unicode_ci
+      mysql:
+        default-character-set: utf8mb4
+
+- name: Allow root login on localhost
+  command: 'mysql -ne "{{item}}"'
+  with_items:
+    - GRANT ALL PRIVILEGES ON *.* TO 'root'@'localhost' IDENTIFIED BY '{{ erpnext_mysql_root_pass }}' WITH GRANT OPTION
+    - FLUSH PRIVILEGES
+  changed_when: False
