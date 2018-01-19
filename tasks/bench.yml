@@ -23,3 +23,10 @@
     creates: '{{ erpnext_path }}/frappe-bench/package.json'
   become: yes
   become_user: '{{ erpnext_user }}'
+
+# - name: Add a site
+#   command: ~/.local/bin/bench new-site --db-name {{ erpnext_user }}  --mariadb-root-password {{ erpnext_mysql_root_pass }} --admin-password {{ erpnext_user }} {{ erpnext_new_site }}
+#   args:
+#     chdir: '{{ erpnext_path }}/frappe-bench'
+#   become: yes
+#   become_user: '{{ erpnext_user }}'
