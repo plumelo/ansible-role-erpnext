@@ -23,7 +23,6 @@ rules:
     level: warning
     indent-sequences: consistent
   line-length:
-    level: warning
+    level: disable
     allow-non-breakable-inline-mappings: true
   truthy: disable
-
