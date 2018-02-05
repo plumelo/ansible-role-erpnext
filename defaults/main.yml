@@ -4,7 +4,9 @@ erpnext_user: frappe
 
 erpnext_repo: https://github.com/frappe/bench
 erpnext_path: /home/{{ erpnext_user }}
-erpnext_new_site: frappe
-erpnext_app:
+erpnext_site: site1.local
+erpnext_apps:
   - erpnext
-erpnext_mysql_root_pass: "frappe"
+erpnext_mysql_root_pass: 'frappe'
+frappe_env:
+  PATH: '{{ erpnext_path }}/.local/bin:{{ erpnext_path }}/n/bin:{{ ansible_env.PATH }}'
