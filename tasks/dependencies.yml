@@ -27,20 +27,10 @@
     - libfontconfig1-dev
     - libfreetype6-dev
     - fontconfig
-    - nodejs
-    - npm
 
-# - name: Install n
-#   become: True
-#   become_user: '{{ erpnext_user }}'
-#   shell: curl -L https://git.io/n-install | bash -s -- -y latest
-#   args:
-#     creates: /home/{{ erpnext_user }}/n/bin/n
-#     executable: /bin/bash
-- name: Install node n
-  npm:
-    name: n
-    global: yes
-
-- name: Install node
-  shell: n latest
+- name: Install n
+  become_user: '{{ erpnext_user }}'
+  shell: curl -L https://git.io/n-install | SHELL=/bin/bash bash -s -- -y stable
+  args:
+    creates: '{{ erpnext_path }}/n/bin/n'
+    executable: /bin/bash
