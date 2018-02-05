@@ -8,6 +8,6 @@
 
 - include: mysql.yml
 
-- include: nginx.yml
+# - include: nginx.yml
 
 - include: bench.yml
