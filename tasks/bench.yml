@@ -15,18 +15,68 @@
     name: bench-repo
   become: yes
   become_user: '{{ erpnext_user }}'
+  changed_when: False
 
 - name: Create a new bench
-  command: ~/.local/bin/bench init frappe-bench
+  shell: bench init frappe-bench
+  register: init_res
+  environment: '{{ frappe_env }}'
   args:
     chdir: '{{ erpnext_path }}'
     creates: '{{ erpnext_path }}/frappe-bench/package.json'
+    executable: '/bin/bash'
   become: yes
   become_user: '{{ erpnext_user }}'
 
-# - name: Add a site
-#   command: ~/.local/bin/bench new-site --db-name {{ erpnext_user }}  --mariadb-root-password {{ erpnext_mysql_root_pass }} --admin-password {{ erpnext_user }} {{ erpnext_new_site }}
-#   args:
-#     chdir: '{{ erpnext_path }}/frappe-bench'
-#   become: yes
-#   become_user: '{{ erpnext_user }}'
+- debug: var=init_res
+
+- name: Add a site
+  shell: bench new-site --db-name {{ erpnext_user }} --mariadb-root-password {{ erpnext_mysql_root_pass }} --admin-password {{ erpnext_user }} {{ erpnext_site }}
+  register: site_res
+  environment: '{{ frappe_env }}'
+  args:
+    chdir: '{{ erpnext_path }}/frappe-bench'
+    executable: '/bin/bash'
+  become: yes
+  become_user: '{{ erpnext_user }}'
+
+- debug: var=site_res
+
+- name: Add apps
+  shell: bench get-app erpnext https://github.com/frappe/{{ item }}
+  register: addapp_res
+  environment: '{{ frappe_env }}'
+  args:
+    chdir: '{{ erpnext_path }}/frappe-bench'
+    creates: '{{ erpnext_path }}/frappe-bench/apps/{{ item }}/README.md'
+    executable: '/bin/bash'
+  with_items: '{{ erpnext_apps }}'
+  become: yes
+  become_user: '{{ erpnext_user }}'
+
+- debug: var=addapp_res
+
+- name: List and register apps
+  shell: bench --site {{ erpnext_site }} list-apps
+  changed_when: False
+  register: apps_list
+  environment: '{{ frappe_env }}'
+  args:
+    chdir: '{{ erpnext_path }}/frappe-bench'
+    executable: '/bin/bash'
+  become: yes
+  become_user: '{{ erpnext_user }}'
+
+- debug: var=apps_list
+
+- name: Install apps
+  shell: bench --site {{ erpnext_site }} install-app {{ item }}
+  when: item not in apps_list.stdout
+  environment: '{{ frappe_env }}'
+  with_items: '{{ erpnext_apps }}'
+  args:
+    chdir: '{{ erpnext_path }}/frappe-bench'
+    executable: '/bin/bash'
+  become: yes
+  become_user: '{{ erpnext_user }}'
+# creates: '{{ erpnext_path }}/frappe-bench/sites/{{ erpnext_site }}/site_config.json'
