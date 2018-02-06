@@ -5,6 +5,7 @@
     accept_hostkey: yes
     repo: '{{ erpnext_repo }}'
     dest: '{{ erpnext_path }}/bench-repo'
+  register: frappe_bench_repo_status
   become: yes
   become_user: '{{ erpnext_user }}'
 
@@ -13,6 +14,7 @@
     chdir: '{{ erpnext_path }}'
     extra_args: --user -e
     name: bench-repo
+  when: frappe_bench_repo_status.changed
   become: yes
   become_user: '{{ erpnext_user }}'
   changed_when: False
@@ -32,7 +34,7 @@
 
 - name: Add a site
   shell: bench new-site --db-name {{ erpnext_user }} --mariadb-root-password {{ erpnext_mysql_root_pass }} --admin-password {{ erpnext_user }} {{ erpnext_site }}
-  register: site_res
+  register: bench_site_status
   environment: '{{ frappe_env }}'
   args:
     chdir: '{{ erpnext_path }}/frappe-bench'
@@ -41,7 +43,7 @@
   become: yes
   become_user: '{{ erpnext_user }}'
 
-- debug: var=site_res
+- debug: var=bench_site_status
 
 - name: Add apps
   shell: bench get-app erpnext https://github.com/frappe/{{ item }}
@@ -81,8 +83,35 @@
   become: yes
   become_user: '{{ erpnext_user }}'
 
-- name: Configure bench service
-  template: src=bench.service.j2 dest=/etc/systemd/system/bench.service
+- name: Synchronize
+  shell: bench {{ item }}
+  environment: '{{ frappe_env }}'
+  args:
+    chdir: '{{ erpnext_path }}/frappe-bench'
+    executable: '/bin/bash'
+  when: bench_site_status.changed
+  with_items:
+    - migrate
+    - build
+  become: yes
+  become_user: '{{ erpnext_user }}'
 
-- name: Enable bench service with systemd
-  systemd: name=bench.service daemon-reload=yes enabled=yes state=started
+- name: Supervisor if not configured
+  shell: bench setup supervisor
+  args:
+    chdir: '{{ erpnext_path }}/frappe-bench'
+    creates: '{{ erpnext_path }}/frappe-bench/config/supervisor.conf'
+    executable: '/bin/bash'
+  become: yes
+  become_user: '{{ erpnext_user }}'
+
+- name: Link supervisor.conf
+  file:
+    src: '{{ erpnext_path }}/frappe-bench/config/supervisor.conf'
+    dest: /etc/supervisor/conf.d/frappe-bench.conf
+    state: link
+  register: supervisor_link
+
+- name: Restart supervisor service
+  systemd: name=supervisor state=restarted
+  changed_when: False
