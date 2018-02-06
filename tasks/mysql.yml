@@ -16,14 +16,14 @@
           - 127.0.0.1
     mysql_config:
       mysqld:
-        innodb-file-format: barracuda
-        innodb-file-per-table: 1
-        innodb-large-prefix: 1
-        character-set-client-handshake: FALSE
-        character-set-server: utf8mb4
-        collation-server: utf8mb4_unicode_ci
+        innodb_file_format: barracuda
+        innodb_file_per_table: 1
+        innodb_large_prefix: 1
+        character_set_client_handshake: 'FALSE'
+        character_set_server: utf8mb4
+        collation_server: utf8mb4_unicode_ci
       mysql:
-        default-character-set: utf8mb4
+        default_character_set: utf8mb4
 
 - name: Allow root login on localhost
   command: 'mysql -ne "{{item}}"'
