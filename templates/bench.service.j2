@@ -1,0 +1,18 @@
+[Unit]
+Description=Bench Service
+After=network.target
+
+[Service]
+Type=simple
+User={{ erpnext_user }}
+Group={{ erpnext_user }}
+Environment="PATH=/home/{{erpnext_user}}/.local/bin:/home/{{ erpnext_user }}/n/bin:$PATH"
+WorkingDirectory={{ erpnext_path }}/frappe-bench/sites
+ExecStart={{ erpnext_path }}/frappe-bench/env/bin/gunicorn -b 0.0.0.0:8000 -w 4 frappe.app:application preload
+Restart=always
+RestartSec=10
+StandardOutput=syslog
+StandardError=syslog
+
+[Install]
+WantedBy=multi-user.target
