@@ -27,6 +27,7 @@
     - libfontconfig1-dev
     - libfreetype6-dev
     - fontconfig
+    - supervisor
 
 - name: Install n
   become_user: '{{ erpnext_user }}'
