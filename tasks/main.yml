@@ -6,8 +6,8 @@
 
 - include: redis.yml
 
-- include: mysql.yml
+- include: nginx.yml
 
-# - include: nginx.yml
+- include: mysql.yml
 
 - include: bench.yml
