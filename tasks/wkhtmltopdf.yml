@@ -2,6 +2,7 @@
 
 - name: Ensure wkhtmltox directory exists
   file: path='/opt/wkhtmltox' state=directory owner=root group=root
+  register: wkhtmltopdk_dir_status
 
 - name: Download wkhtmltopdf
   unarchive:
@@ -10,6 +11,7 @@
     remote_src: yes
     extra_opts: '--strip-components=1'
     list_files: yes
+  when: wkhtmltopdk_dir_status.changed
 
 - name: Symlink wkhtmltox executables
   file:
