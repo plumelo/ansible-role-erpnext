@@ -79,4 +79,3 @@
     executable: '/bin/bash'
   become: yes
   become_user: '{{ erpnext_user }}'
-# creates: '{{ erpnext_path }}/frappe-bench/sites/{{ erpnext_site }}/site_config.json'
