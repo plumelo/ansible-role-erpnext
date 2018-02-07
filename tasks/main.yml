@@ -11,19 +11,3 @@
 - include: mysql.yml
 
 - include: bench.yml
-
-
-# frappe_user: frappe
-
-# frappe_repo: https://github.com/frappe/bench
-# frappe_repo_path: '/home/{{ frappe_user }}/.bench'
-
-# frappe_path: /home/{{ frappe_user }}/frappe-bench
-
-# frappe_site: site1.local
-# frappe_apps:
-#   - erpnext
-# frappe_mysql_password: 'frappe'
-
-# frappe_env:
-#   PATH: '{{ frappe_repo_path }}/.local/bin:{{ frappe_repo_path }}/n/bin:{{ ansible_env.PATH }}'
