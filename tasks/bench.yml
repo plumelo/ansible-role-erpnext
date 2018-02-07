@@ -3,116 +3,107 @@
 - name: Clone the git repo for bench
   git:
     accept_hostkey: yes
-    repo: '{{ erpnext_repo }}'
-    dest: '{{ erpnext_path }}/bench-repo'
+    repo: '{{ frappe_repo }}'
+    dest: '{{ frappe_repo_path }}'
   register: frappe_bench_repo_status
   become: yes
-  become_user: '{{ erpnext_user }}'
+  become_user: '{{ frappe_user }}'
+
+- debug:
+    msg: "{{ frappe_repo_path|dirname }}"
 
 - name: Pip install bench
   pip:
-    chdir: '{{ erpnext_path }}'
+    chdir: '{{ frappe_repo_path|dirname }}'
     extra_args: --user -e
-    name: bench-repo
+    name: .bench
   when: frappe_bench_repo_status.changed
   become: yes
-  become_user: '{{ erpnext_user }}'
+  become_user: '{{ frappe_user }}'
   changed_when: False
 
+- debug:
+    msg: "{{ frappe_repo_path|dirname }}"
+
 - name: Create a new bench
-  shell: bench init frappe-bench
-  register: init_res
+  shell: bench init {{ frappe_path|basename }}
   environment: '{{ frappe_env }}'
   args:
-    chdir: '{{ erpnext_path }}'
-    creates: '{{ erpnext_path }}/frappe-bench/package.json'
+    chdir: '{{ frappe_path|dirname }}'
+    creates: '{{ frappe_path }}/package.json'
     executable: '/bin/bash'
   become: yes
-  become_user: '{{ erpnext_user }}'
-
-- debug: var=init_res
+  become_user: '{{ frappe_user }}'
 
 - name: Add a site
-  shell: bench new-site --db-name {{ erpnext_user }} --mariadb-root-password {{ erpnext_mysql_root_pass }} --admin-password {{ erpnext_user }} {{ erpnext_site }}
+  shell: bench new-site --db-name {{ frappe_user }} --mariadb-root-password {{ frappe_mysql_password }} --admin-password {{ frappe_user }} {{ frappe_site }}
   register: bench_site_status
   environment: '{{ frappe_env }}'
   args:
-    chdir: '{{ erpnext_path }}/frappe-bench'
-    creates: '{{ erpnext_path }}/frappe-bench/sites/{{ erpnext_site }}/site_config.json'
+    chdir: '{{ frappe_path }}'
+    creates: '{{ frappe_path }}/sites/{{ frappe_site }}/site_config.json'
     executable: '/bin/bash'
   become: yes
-  become_user: '{{ erpnext_user }}'
-
-- debug: var=bench_site_status
+  become_user: '{{ frappe_user }}'
 
 - name: Add apps
   shell: bench get-app erpnext https://github.com/frappe/{{ item }}
-  register: addapp_res
   environment: '{{ frappe_env }}'
   args:
-    chdir: '{{ erpnext_path }}/frappe-bench'
-    creates: '{{ erpnext_path }}/frappe-bench/apps/{{ item }}/README.md'
+    chdir: '{{ frappe_path }}'
+    creates: '{{ frappe_path }}/apps/{{ item }}/README.md'
     executable: '/bin/bash'
-  with_items: '{{ erpnext_apps }}'
+  with_items: '{{ frappe_apps }}'
   become: yes
-  become_user: '{{ erpnext_user }}'
-
-- debug: var=addapp_res
+  become_user: '{{ frappe_user }}'
 
 - name: List and register apps
-  shell: bench --site {{ erpnext_site }} list-apps
+  shell: bench --site {{ frappe_site }} list-apps
   changed_when: False
   register: apps_list
   environment: '{{ frappe_env }}'
   args:
-    chdir: '{{ erpnext_path }}/frappe-bench'
+    chdir: '{{ frappe_path }}'
     executable: '/bin/bash'
   become: yes
-  become_user: '{{ erpnext_user }}'
-
-- debug: var=apps_list
+  become_user: '{{ frappe_user }}'
 
 - name: Install apps
-  shell: bench --site {{ erpnext_site }} install-app {{ item }}
+  shell: bench --site {{ frappe_site }} install-app {{ item }}
   when: item not in apps_list.stdout
   environment: '{{ frappe_env }}'
-  with_items: '{{ erpnext_apps }}'
+  with_items: '{{ frappe_apps }}'
   args:
-    chdir: '{{ erpnext_path }}/frappe-bench'
+    chdir: '{{ frappe_path }}'
     executable: '/bin/bash'
   become: yes
-  become_user: '{{ erpnext_user }}'
+  become_user: '{{ frappe_user }}'
 
 - name: Synchronize
   shell: bench {{ item }}
   environment: '{{ frappe_env }}'
   args:
-    chdir: '{{ erpnext_path }}/frappe-bench'
+    chdir: '{{ frappe_path }}'
     executable: '/bin/bash'
   when: bench_site_status.changed
   with_items:
     - migrate
     - build
   become: yes
-  become_user: '{{ erpnext_user }}'
+  become_user: '{{ frappe_user }}'
 
 - name: Supervisor if is not configured
   shell: bench setup supervisor
   environment: '{{ frappe_env }}'
   args:
-    chdir: '{{ erpnext_path }}/frappe-bench'
-    creates: '{{ erpnext_path }}/frappe-bench/config/supervisor.conf'
+    chdir: '{{ frappe_path }}'
+    creates: '{{ frappe_path }}/config/supervisor.conf'
     executable: '/bin/bash'
   become: yes
-  become_user: '{{ erpnext_user }}'
+  become_user: '{{ frappe_user }}'
 
 - name: Link supervisor.conf
   file:
-    src: '{{ erpnext_path }}/frappe-bench/config/supervisor.conf'
+    src: '{{ frappe_path }}/config/supervisor.conf'
     dest: /etc/supervisor/conf.d/frappe-bench.conf
     state: link
-  register: supervisor_link
-
-- name: Restart supervisor service
-  systemd: name=supervisor state=restarted
-  changed_when: False
