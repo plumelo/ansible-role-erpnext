@@ -2,13 +2,13 @@
 
 - include_role: name=plumelo.mysql private=true
   vars:
-    mysql_root_pass: '{{ erpnext_mysql_root_pass }}'
+    mysql_root_pass: '{{ frappe_mysql_password }}'
     mysql_package: mariadb
     mysql_users:
       - name: 'root'
         append_privs: yes
         state: present
-        pass: '{{ erpnext_mysql_root_pass }}'
+        pass: '{{ frappe_mysql_password }}'
         privs:
           - "*.*:ALL,GRANT"
         hosts:
@@ -28,6 +28,6 @@
 - name: Allow root login on localhost
   command: 'mysql -ne "{{item}}"'
   with_items:
-    - GRANT ALL PRIVILEGES ON *.* TO 'root'@'localhost' IDENTIFIED BY '{{ erpnext_mysql_root_pass }}' WITH GRANT OPTION
+    - GRANT ALL PRIVILEGES ON *.* TO 'root'@'localhost' IDENTIFIED BY '{{ frappe_mysql_password }}' WITH GRANT OPTION
     - FLUSH PRIVILEGES
   changed_when: False
