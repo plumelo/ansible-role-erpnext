@@ -1,8 +1,8 @@
 ---
 
-- name: Create erpnext user
+- name: Create frappe user
   user:
-    name: '{{ erpnext_user }}'
+    name: '{{ frappe_user }}'
 
 - name: Install system packages
   apt:
@@ -31,8 +31,8 @@
     - supervisor
 
 - name: Install n
-  become_user: '{{ erpnext_user }}'
+  become_user: '{{ frappe_user }}'
   shell: curl -L https://git.io/n-install | SHELL=/bin/bash bash -s -- -y stable
   args:
-    creates: '{{ erpnext_path }}/n/bin/n'
+    creates: '{{ _frappe_home }}/n/bin/n'
     executable: /bin/bash
