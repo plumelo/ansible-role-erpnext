@@ -101,3 +101,7 @@
     src: '{{ frappe_path }}/config/supervisor.conf'
     dest: /etc/supervisor/conf.d/frappe-bench.conf
     state: link
+
+- name: Restart supervisor service
+  systemd: name=supervisor state=restarted
+  changed_when: False
