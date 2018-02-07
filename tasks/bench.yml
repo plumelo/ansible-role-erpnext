@@ -9,9 +9,6 @@
   become: yes
   become_user: '{{ frappe_user }}'
 
-- debug:
-    msg: "{{ frappe_repo_path|dirname }}"
-
 - name: Pip install bench
   pip:
     chdir: '{{ frappe_repo_path|dirname }}'
@@ -21,9 +18,6 @@
   become: yes
   become_user: '{{ frappe_user }}'
   changed_when: False
-
-- debug:
-    msg: "{{ frappe_repo_path|dirname }}"
 
 - name: Create a new bench
   shell: bench init {{ frappe_path|basename }}
