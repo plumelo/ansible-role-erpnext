@@ -1,5 +1,7 @@
 ---
 
+extends: default
+
 rules:
   braces:
     min-spaces-inside: 0
@@ -20,21 +22,15 @@ rules:
     max-spaces-after: 1
   comments:
     level: warning
-    require-starting-space: true
+    require-starting-space: false
     min-spaces-from-content: 2
-  comments-indentation:
-    level: warning
+  comments-indentation: disable
   document-end: disable
-  document-start:
-    level: warning
-    present: true
+  document-start: disable
   empty-lines:
     max: 2
     max-start: 0
     max-end: 0
-  empty-values:
-    forbid-in-block-mappings: false
-    forbid-in-flow-mappings: false
   hyphens:
     max-spaces-after: 1
   indentation:
@@ -42,17 +38,12 @@ rules:
     indent-sequences: true
     check-multi-line-strings: false
   key-duplicates: enable
-  key-ordering: disable
   line-length:
-    max: 80
+    max: 250
     allow-non-breakable-words: true
     allow-non-breakable-inline-mappings: false
   new-line-at-end-of-file: enable
   new-lines:
     type: unix
-  octal-values:
-    forbid-implicit-octal: false
-    forbid-explicit-octal: false
   trailing-spaces: enable
-  truthy:
-    level: warning
+  truthy: disable
