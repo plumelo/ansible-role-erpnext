@@ -96,8 +96,9 @@
   become: yes
   become_user: '{{ erpnext_user }}'
 
-- name: Supervisor if not configured
+- name: Supervisor if is not configured
   shell: bench setup supervisor
+  environment: '{{ frappe_env }}'
   args:
     chdir: '{{ erpnext_path }}/frappe-bench'
     creates: '{{ erpnext_path }}/frappe-bench/config/supervisor.conf'
