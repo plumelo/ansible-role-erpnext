@@ -1,6 +1,7 @@
 ---
 
 frappe_user: frappe
+frappe_admin_password: changeme
 
 _frappe_home: '/home/{{ frappe_user }}'
 

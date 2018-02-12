@@ -30,7 +30,7 @@
   become_user: '{{ frappe_user }}'
 
 - name: Add a site
-  shell: bench new-site --db-name {{ frappe_user }} --mariadb-root-password {{ frappe_mysql_password }} --admin-password {{ frappe_user }} {{ frappe_site }}
+  shell: bench new-site --db-name {{ frappe_user }} --mariadb-root-password {{ frappe_mysql_password }} --admin-password {{ frappe_admin_password }} {{ frappe_site }}
   register: bench_site_status
   environment: '{{ frappe_env }}'
   args:
